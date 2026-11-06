@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Page to Sheet",
+  "version": "0.1.0",
+  "description": "Pull structured rows out of the page you are reading with Claude or OpenAI, review them, then save to CSV or Google Sheets.",
+  "minimum_chrome_version": "120",
+  "action": { "default_title": "Open Page to Sheet" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["sidePanel", "activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*",
+    "https://script.google.com/*",
+    "https://script.googleusercontent.com/*"
+  ],
+  "optional_host_permissions": ["https://*/*", "http://*/*"]
+}
