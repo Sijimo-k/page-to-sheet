@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { keyColumnsOf, mergeRows, normalizeValue, rowKey } from "../src/lib/dedupe";
 import { toCsv } from "../src/lib/csv";
-import { buildInstructions, normalizeRows } from "../src/lib/rows";
+import { buildInstructions, buildUserContent, normalizeRows } from "../src/lib/rows";
 import { isAppsScriptUrl } from "../src/lib/sheets";
 import { DEFAULT_TEMPLATES, type Template } from "../src/lib/types";
 
@@ -71,7 +71,8 @@ describe("rows", () => {
 
   it("lists every column with its hint in the instructions", () => {
     const text = buildInstructions(columns);
-    expect(text).toContain("- Price: price as shown, with currency");
+    expect(text).toContain("- Price: current price with currency; if an old price is struck through, use the new one");
+    expect(text).toContain("<struck_through>");
     expect(text).toContain("never guess");
   });
 });
@@ -81,5 +82,25 @@ describe("sheets", () => {
     expect(isAppsScriptUrl("https://script.google.com/macros/s/AKfycb-x_1/exec")).toBe(true);
     expect(isAppsScriptUrl("https://script.google.com/macros/s/AKfycb/dev")).toBe(false);
     expect(isAppsScriptUrl("https://evil.example.com/macros/s/x/exec")).toBe(false);
+  });
+});
+
+describe("page content sent to the model", () => {
+  it("adds links and struck-through text that innerText would lose", () => {
+    const content = buildUserContent({
+      title: "Shop",
+      url: "http://127.0.0.1:8080/products.html",
+      text: "High Mountain Oolong\n$18.00 $15.30",
+      links: [{ text: "High Mountain Oolong", href: "http://127.0.0.1:8080/products.html#oolong" }],
+      struck: [{ text: "$18.00", context: "High Mountain Oolong Taiwan, 50 g $18.00 $15.30" }],
+    });
+    expect(content).toContain("High Mountain Oolong -> http://127.0.0.1:8080/products.html#oolong");
+    expect(content).toContain('"$18.00" in: High Mountain Oolong');
+  });
+
+  it("leaves the sections out when there is nothing to add", () => {
+    const content = buildUserContent({ title: "T", url: "https://example.com/", text: "x", links: [], struck: [] });
+    expect(content).not.toContain("<links>");
+    expect(content).not.toContain("<struck_through>");
   });
 });

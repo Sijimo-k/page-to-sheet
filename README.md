@@ -3,6 +3,8 @@
 A Chrome extension (Manifest V3) that turns the page you are reading into a clean table.
 Pick the columns you want, click **Extract**, review what the AI found, then download a CSV or append the rows to your own Google Sheet.
 
+![Extracting 8 products from a demo shop page into a table, then downloading a CSV](media/demo.gif)
+
 - **Any columns you like.** Templates hold column names plus a short hint for the AI ("price with currency"). Three examples are included: products, events and a business directory.
 - **Claude or OpenAI.** Uses structured output on both, so every answer is a list of rows with exactly your columns.
 - **You review before anything is saved.** Extracted rows appear in an editable table; empty cells are highlighted.

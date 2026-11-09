@@ -34,6 +34,21 @@ export interface PageText {
   /** True when the text was cut to the size limit. */
   truncated: boolean;
   fromSelection: boolean;
+  /** Visible links (text -> absolute URL). innerText drops hrefs, so URL columns need these. */
+  links: PageLink[];
+  /** Visible struck-through text (<s>, <del>, <strike>), usually old prices. innerText hides the strike. */
+  struck: StruckText[];
+}
+
+export interface PageLink {
+  text: string;
+  href: string;
+}
+
+export interface StruckText {
+  text: string;
+  /** Text of the surrounding element, so the model can tell which item it belongs to. */
+  context: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -53,7 +68,7 @@ export const DEFAULT_TEMPLATES: Template[] = [
     name: "Products",
     columns: [
       { name: "Name", hint: "product name" },
-      { name: "Price", hint: "price as shown, with currency" },
+      { name: "Price", hint: "current price with currency; if an old price is struck through, use the new one" },
       { name: "Availability", hint: "in stock, sold out, preorder, etc." },
       { name: "URL", hint: "link to the product page if visible" },
     ],
